@@ -69,6 +69,13 @@ public class Course {
         return name;
     }
 
+    public Lector getLector(){
+        return lector;
+    }
+    public Lector getAssistance(){
+        return assistance;
+    }
+
     public boolean isFull(){
         return students.size()>=30;
     }
@@ -84,6 +91,28 @@ public class Course {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    //For Debugging
+    @Override
+    public String toString() {
+        return "Course{" +
+                "name='" + name + '\'' +
+                ", numberOfStudents=" + (students != null ? students.size() : 0) +
+                ", assistance=" + (assistance != null ? assistance.getId() + " " + assistance.getFirstName() : "none") +
+                ", lector=" + (lector != null ? lector.getId() + " " + lector.getFirstName() : "none") +
+                '}';
+    }
+
+    public void showInfo() {
+        System.out.println("Course Name: " + name);
+        System.out.print("Students: ");
+        for (Student student : students) {
+            System.out.print(student.getFirstName() + " ");
+        }
+        System.out.println();
+        System.out.println("Lector: " + (lector != null ? lector.getFirstName() : "None"));
+        System.out.println("Assistance: " + (assistance != null ? assistance.getFirstName() : "None"));
     }
 
 }

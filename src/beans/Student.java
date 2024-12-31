@@ -61,4 +61,26 @@ public class Student extends User {
         return Objects.hash(id);
     }
 
+    //For Debugging
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", facNumber='" + facNumber + '\'' +
+                ", numberOfCourses=" + (courses != null ? courses.size() : 0) +
+                '}';
+    }
+
+    public void showInfo() {
+        System.out.println("Full Name: "+this.firstName+" "+this.lastName);
+        System.out.println("Faculty Number: " + facNumber);
+        System.out.print("Courses: ");
+        for (Course course : courses) {
+            System.out.print(course.getName() + " ");
+        }
+        System.out.println();
+    }
+
 }

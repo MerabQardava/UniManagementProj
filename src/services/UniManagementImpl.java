@@ -1,9 +1,11 @@
 package services;
 
 import Exceptions.CourseNotFoundException;
+import Exceptions.ProfessorNotFoundException;
 import Exceptions.StudentNotFoundException;
 import beans.Course;
 import beans.Lector;
+import beans.LectorType;
 import beans.Student;
 
 import java.util.ArrayList;
@@ -41,7 +43,17 @@ public class UniManagementImpl implements UniManagement{
     public boolean deleteCourse(String courseName) throws CourseNotFoundException {
         for (Course c : courses) {
             if (courseExists.test(c)) {
+                for(Student s: c.getStudents()){
+                    s.delCourse(c);
+                }
+                if(c.getLector()!=null){
+                    c.getLector().delCourse(c);
+                }
+                if(c.getAssistance()!=null){
+                    c.getAssistance().delCourse(c);
+                }
                 courses.remove(c);
+                System.out.println("The Course "+c.getName()+" Has Been Deleted");
                 return true;
             }
         }
@@ -69,6 +81,9 @@ public class UniManagementImpl implements UniManagement{
     public boolean deleteStudent(int id) throws StudentNotFoundException {
         for(Student s:students){
             if(s.getId()==id){
+                for(Course c:s.getCourses()){
+                    c.delStudent(s);
+                }
                 students.remove(s);
                 return true;
             }
@@ -92,6 +107,9 @@ public class UniManagementImpl implements UniManagement{
     public boolean deleteAssistance(int id) {
         for(Lector s:assistants){
             if(s.getId()==id){
+                for(Course c:s.getCourses()){
+                    c.setAssistance(null);
+                }
                 assistants.remove(s);
                 return true;
             }
@@ -114,7 +132,7 @@ public class UniManagementImpl implements UniManagement{
     @Override
     public boolean assignProfessorToCourse(Lector professor, Course course) {
         if(professor.isFull()){
-            System.out.println("Could Not Assign A Professor To The Course");
+            System.out.println("Could Not Assign A Professor To The Course: Too Many Courses");
             return false;
         }else{
             professor.addCourse(course);
@@ -152,7 +170,7 @@ public class UniManagementImpl implements UniManagement{
         return course.delStudent(student)&&student.delCourse(course);
     }
 
-    public Lector createProfessor(int id, String firstName, String lastName) {
+    public Lector createProfessor(int id, String firstName, String lastName, LectorType type) {
         for(Lector l : lectors) {
             if(l.getId() == id) {
                 return null;
@@ -166,11 +184,61 @@ public class UniManagementImpl implements UniManagement{
     public boolean deleteProfessor(int id) {
         for(Lector l : lectors) {
             if(l.getId() == id) {
+                for(Course c:l.getCourses()){
+                    c.setAssistance(null);
+                }
                 lectors.remove(l);
                 return true;
             }
         }
         return false;
+    }
+
+    public Student getStudentById(int id) throws StudentNotFoundException {
+        for(Student s:students){
+            if(s.getId()==id){
+                return s;
+            }
+        }
+        throw new StudentNotFoundException("The Student With The Given  Id Was Not Found In Our Database");
+    }
+
+    public Course getCourseByName(String name) throws CourseNotFoundException {
+        for(Course c:courses){
+            if(c.getName().equalsIgnoreCase(name)){
+                return c;
+            }
+        }
+        throw new CourseNotFoundException("The Course With The Given Id Was Not Found In Our Database");
+    }
+
+    public Lector getAssistantById(int id) throws ProfessorNotFoundException {
+        for(Lector l:assistants){
+            if(l.getId()==id){
+                return l;
+            }
+        }
+        throw new ProfessorNotFoundException("The Professor With The Given Id Was Not Found In Our Database");
+    }
+
+    public Lector getProfessorById(int id) throws ProfessorNotFoundException {
+        for(Lector l:lectors){
+            if(l.getId()==id){
+                return l;
+            }
+        }
+        throw new ProfessorNotFoundException("The Professor With The Given Id Was Not Found In Our Database");
+    }
+
+    //For Debugging
+    @Override
+    public String toString() {
+        return "UniManagementImpl{" +
+                "numberOfStudents=" + students.size() +
+                ", numberOfCourses=" + courses.size() +
+                ", numberOfAssistants=" + assistants.size() +
+                ", numberOfLectors=" + lectors.size() +
+                '}';
     }
 
 }
